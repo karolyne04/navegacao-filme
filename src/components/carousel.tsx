@@ -1,67 +1,140 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/effect-coverflow";
 import { MdChevronRight, MdChevronLeft } from "react-icons/md";
+import type { Swiper as SwiperType } from 'swiper';
+import type { Navigation as NavigationType } from 'swiper/types';
 
 interface CarouselProps {
-  movies: any[];
+  movies: Movie[];
+}
+
+interface Movie {
+  id: number;
+  title: string;
+  backdrop_path: string;
 }
 
 export default function Carousel({ movies }: CarouselProps) {
-  const [swiperRef, setSwiperRef] = useState<any>(null);
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
+  const prevRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (swiperRef) {
+    if (swiper && swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
+      swiper.params.navigation.prevEl = prevRef.current;
+      swiper.params.navigation.nextEl = nextRef.current;
+      (swiper.navigation as NavigationType).init();
+      (swiper.navigation as NavigationType).update();
+
       const interval = setInterval(() => {
-        swiperRef.slideNext();
-      }, 10000); // Muda de slide a cada 10 segundos
+        swiper.slideNext();
+      }, 10000);
 
       return () => clearInterval(interval);
     }
-  }, [swiperRef]);
+  }, [swiper]);
 
   if (movies.length === 0) {
     return <div className="text-center text-white mt-4">Nenhum filme encontrado.</div>;
   }
 
   return (
-    <div className="text-white p-6 rounded-lg">
+    <div className="relative w-full overflow-hidden bg-primary">
       <Swiper
-        modules={[Navigation, Pagination]} // Certifique-se de que os módulos estão ativados
-        slidesPerView={1}
-        pagination={{ clickable: true }}
-        navigation
-        onSwiper={setSwiperRef}
-        className="relative flex justify-center items-center max-w-screen-lg mx-auto"
-        style={{ height: "530px" }} // Define uma altura fixa
+        modules={[Navigation, Pagination, EffectCoverflow]}
+        effect="coverflow"
+        centeredSlides={true}
+        slidesPerView={1.8}
+        initialSlide={1}
+        loop={true}
+        coverflowEffect={{
+          rotate: 0,
+          stretch: 0,
+          depth: 100,
+          modifier: 2.5,
+          slideShadows: false,
+        }}
+        pagination={{
+          clickable: true,
+          type: 'bullets',
+        }}
+        navigation={{
+          prevEl: prevRef.current,
+          nextEl: nextRef.current,
+        }}
+        onSwiper={setSwiper}
+        className="w-full h-[530px]"
       >
         {movies.map((movie) => (
-          <SwiperSlide key={movie.id} className="flex justify-center relative">
+          <SwiperSlide key={movie.id}>
             <div className="relative w-full h-full">
               <Image
-                src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+                src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
                 alt={movie.title}
-                width={1392}
-                height={530}
-                className="rounded-lg shadow-lg object-cover w-full h-full"
+                fill
+                priority
+                className="object-cover"
               />
+              {/* Gradiente sobreposto */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
             </div>
           </SwiperSlide>
         ))}
-        <div className="swiper-button-prev">
-          <MdChevronLeft size={25} />
-        </div>
-        <div className="swiper-button-next">
-          <MdChevronRight size={25} />
-        </div>
-        <div className="swiper-pagination" />
       </Swiper>
+
+      {/* Botões de navegação customizados */}
+      <button
+        ref={prevRef}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-secondary rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors cursor-pointer"
+      >
+        <MdChevronLeft size={30} className="text-white" />
+      </button>
+
+      <button
+        ref={nextRef}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-secondary rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors cursor-pointer"
+      >
+        <MdChevronRight size={30} className="text-white" />
+      </button>
+
+      {/* Estilização adicional */}
+      <style jsx global>{`
+        .swiper-pagination {
+          position: absolute;
+          bottom: 20px !important;
+          z-index: 20;
+        }
+        
+        .swiper-button-next,
+        .swiper-button-prev {
+          display: none;
+        }
+        
+        .swiper-pagination-bullet {
+          width: 8px;
+          height: 8px;
+          background: white;
+          opacity: 0.5;
+          margin: 0 4px;
+        }
+        
+        .swiper-pagination-bullet-active {
+          background: #E51A54;
+          opacity: 1;
+        }
+
+        .swiper-wrapper {
+          align-items: center;
+        }
+      `}</style>
     </div>
   );
 }

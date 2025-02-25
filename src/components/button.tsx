@@ -3,15 +3,17 @@
 
 interface ButtonProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
-  children: React.ReactNode;
+  
   className?: string;
   type?: 'button' | 'submit' | 'reset'; // Tipos de botão que você pode usar
   disabled?: boolean; // Se o botão deve ser desabilitado
+  title: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
   onClick,
-  children,
+  
+  title,
   className = '',
   type = 'button',
   disabled = false,
@@ -23,7 +25,8 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       disabled={disabled}
     >
-      {children}
+      
+      <p>{title}</p>
     </button>
   );
 };

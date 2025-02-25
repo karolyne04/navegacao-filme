@@ -4,14 +4,18 @@ export async function fetchMovieData(movieId: string) {
     const baseURL = process.env.TMDB_BASE_URL;
     const apiKey = process.env.TMDB_API_KEY;
   
-    const response = await fetch(`${baseURL}/movie/${movieId}?api_key=${apiKey}`);
+    const response = await fetch(
+        `${baseURL}/movie/${movieId}?api_key=${apiKey}&language=pt-BR&append_to_response=credits,similar`
+    );
+    
     if (!response.ok) {
-      throw new Error('Erro ao buscar dados do filme');
+        throw new Error('Erro ao buscar dados do filme');
     }
+    
     return await response.json();
-  }
+}
 
-  export async function getRequestToken() {
+export async function getRequestToken() {
     const baseURL = process.env.TMDB_BASE_URL;
     const apiKey = process.env.TMDB_API_KEY;
 
@@ -52,8 +56,6 @@ export async function authenticateUser() {
   return data.request_token;
 }
 
-
-
 export async function createSession(requestToken: string) {
   const baseURL = process.env.TMDB_BASE_URL;
   const apiKey = process.env.TMDB_API_KEY;
@@ -70,4 +72,20 @@ export async function createSession(requestToken: string) {
 
   const data = await response.json();
   return data.session_id;
+}
+
+export async function searchMovies(query: string) {
+    const baseURL = process.env.TMDB_BASE_URL;
+    const apiKey = process.env.TMDB_API_KEY;
+    
+    const response = await fetch(
+        `${baseURL}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=pt-BR`
+    );
+    
+    if (!response.ok) {
+        throw new Error('Erro ao buscar filmes');
+    }
+
+    const data = await response.json();
+    return data;
 }
