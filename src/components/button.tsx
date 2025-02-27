@@ -1,34 +1,19 @@
-
-
-
 interface ButtonProps {
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-  
+  onClick?: () => void;
+  children?: React.ReactNode;
+  type?: "button" | "submit" | "reset";
   className?: string;
-  type?: 'button' | 'submit' | 'reset'; // Tipos de botão que você pode usar
-  disabled?: boolean; // Se o botão deve ser desabilitado
-  title: string;
+  title?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  onClick,
-  
-  title,
-  className = '',
-  type = 'button',
-  disabled = false,
-}) => {
+export default function Button({ onClick, children, type = "button", className = "", title }: ButtonProps) {
   return (
     <button
-      onClick={onClick}
-      className={`btn ${className} bg-secondary font-bold rounded-md w-full h-10 text-lg rounded-md`}
       type={type}
-      disabled={disabled}
+      onClick={onClick}
+      className={`bg-secondary text-white px-6 py-2 rounded-md hover:bg-pink-700 transition-colors min-w-[144px] h-[40px] flex items-center justify-center ${className}`}
     >
-      
-      <p>{title}</p>
+      {title || children}
     </button>
   );
-};
-
-export default Button;
+}

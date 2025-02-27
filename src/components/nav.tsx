@@ -59,7 +59,6 @@ export default function Nav() {
                 <Button
                     title="Faça login"
                     onClick={handleLogin}
-                    className="w-36 color-white"
                 />
             </div>
         </div>

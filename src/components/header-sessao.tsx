@@ -32,7 +32,7 @@ export default function HeaderSessao() {
     return (
         <div className="bg-primary flex g-5 justify-between	p-2">
             <div className="flex gap-3 p-1 justify-items-center">
-                
+
                 <IoVideocamOutline size={28} color="#E51A54" className="flex self-center justify-items-center" />
                 <Image src={logo} alt="logo" width={109} height={35} />
             </div>
@@ -47,7 +47,7 @@ export default function HeaderSessao() {
                         <FiUser className="text-white" size={20} />
                     </button>
 
-                    
+
                     {isDropdownOpen && (
                         <div className="absolute right-0 mt-2 w-48 bg-zinc-900 rounded-lg shadow-lg py-1 z-50">
                             <div className="px-4 py-2 text-white border-b border-zinc-700">
