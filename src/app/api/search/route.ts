@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
+    const page = searchParams.get('page') || '1';
     
     if (!query) {
         return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
     
     try {
         const response = await fetch(
-            `${baseURL}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=pt-BR`
+            `${baseURL}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=pt-BR&page=${page}`
         );
         
         if (!response.ok) {

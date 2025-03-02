@@ -13,6 +13,7 @@ const config: Config = {
         secondary: "#E51A54",
         colorText: "#71717A",
         colorText2: "#FFFFF",
+        boxCorlor: "#27272A",
 
       },
     },

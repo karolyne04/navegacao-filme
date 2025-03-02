@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     remotePatterns: [
       {
@@ -11,7 +10,7 @@ const nextConfig: NextConfig = {
     ],
   },
   transpilePackages: ['react-toastify'],
-  /* config options here */
-};
+  // ... outras configurações que você já tenha
+}
 
-export default nextConfig;
+module.exports = nextConfig 
