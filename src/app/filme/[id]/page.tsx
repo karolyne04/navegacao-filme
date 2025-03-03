@@ -27,14 +27,14 @@ interface MovieDetails {
 export default function FilmePage() {
     const params = useParams();
     const id = params?.id as string;
-    
+
     const [movie, setMovie] = useState<MovieDetails | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getMovieDetails = async () => {
             if (!id) return;
-            
+
             try {
                 const data = await fetchMovieData(id);
                 setMovie(data);
@@ -55,7 +55,7 @@ export default function FilmePage() {
     return (
         <div className="min-h-screen bg-primary">
             <Nav />
-            
+
             {/* Hero Section */}
             <div className="relative w-full h-[500px]">
                 <Image
@@ -66,7 +66,7 @@ export default function FilmePage() {
                     priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/20 to-transparent" />
-                
+
                 {/* Conteúdo sobreposto */}
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                     <div className="flex gap-8 items-end max-w-7xl mx-auto">
@@ -78,7 +78,7 @@ export default function FilmePage() {
                                 className="object-cover rounded-lg shadow-xl"
                             />
                         </div>
-                        
+
                         <div className="flex-1">
                             <h1 className="text-4xl font-bold text-white mb-2">
                                 {movie.title}

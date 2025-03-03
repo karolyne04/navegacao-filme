@@ -89,3 +89,16 @@ export async function searchMovies(query: string) {
     const data = await response.json();
     return data;
 }
+
+export async function getUserDetails(sessionId: string) {
+    const baseURL = process.env.TMDB_BASE_URL;
+    const apiKey = process.env.TMDB_API_KEY;
+
+    const response = await fetch(`${baseURL}/account?api_key=${apiKey}&session_id=${sessionId}`);
+    
+    if (!response.ok) {
+        throw new Error("Erro ao buscar dados do usuário");
+    }
+
+    return await response.json();
+}

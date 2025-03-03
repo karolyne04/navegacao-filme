@@ -14,7 +14,7 @@ export default function Nav() {
     const [isSearching, setIsSearching] = useState(false);
 
     const handleLogin = () => {
-        router.push('/login');
+        router.push('/');
     };
 
     const handleSearch = async (query: string) => {
@@ -55,6 +55,7 @@ export default function Nav() {
                     className="w-80"
                     disabled={isSearching}
                     placeholder="Buscar filmes..."
+                    color="black"
                 />
                 <Button
                     title="Faça login"

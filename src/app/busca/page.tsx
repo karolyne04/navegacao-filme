@@ -7,6 +7,7 @@ import Nav from "@/components/nav";
 import PopularMoviesCarousel from "@/components/popular-movies-carousel";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import Line from "@/components/line";
 
 interface Movie {
     id: number;
@@ -33,6 +34,7 @@ export default function BuscaPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [isFavorite, setIsFavorite] = useState(false);
+    const itemsPerPage = 12; // Definindo o número de itens por página
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -42,7 +44,9 @@ export default function BuscaPage() {
                 const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&page=${currentPage}`);
                 const data = await response.json();
                 setMovies(data.results);
-                setTotalPages(Math.min(data.total_pages, 107)); // TMDB limita a 500 resultados (cerca de 107 páginas)
+                setTotalPages(Math.min(Math.ceil(data.total_results / itemsPerPage), 107));
+
+                // Atualizando para calcular total de páginas
                 setSelectedMovie(null);
             } catch (error) {
                 console.error("Erro ao buscar filmes:", error);
@@ -81,28 +85,27 @@ export default function BuscaPage() {
     };
 
     return (
-        <div className="h-screen bg-primary flex flex-col">
+        <div className={`h-screen bg-primary flex flex-col ${selectedMovie ? 'overflow-hidden' : ''}`}>
             <Nav />
-            <div className="flex-1 px-4 py-6 overflow-y-auto">
+            <Line />
+            <div className={`flex-1 px-4 py-6 ${selectedMovie ? 'overflow-hidden' : 'overflow-y-auto'}`}>
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl text-white">
                         Resultados para: {query}
                     </h1>
-                    <div className="text-white">
-                        Página {currentPage} de {totalPages}
-                    </div>
+
                 </div>
 
                 {loading ? (
                     <div className="text-white">Carregando...</div>
                 ) : !selectedMovie ? (
-                    // Grid de resultados com altura fixa e scroll interno
+                    // Grid de resultados
                     <div className="h-[calc(100vh-220px)] overflow-y-auto">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                            {movies.map((movie) => (
+                            {movies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((movie) => (
                                 <div
                                     key={movie.id}
-                                    className="relative aspect-[2/3] cursor-pointer group"
+                                    className="relative aspect-[2/3] cursor-pointer group h-80 w-30"
                                     onClick={() => setSelectedMovie(movie)}
                                 >
                                     <Image
@@ -128,14 +131,14 @@ export default function BuscaPage() {
                     <>
                         <div className="relative">
                             <div className="relative w-full h-[500px]">
-                               
+
                                 <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/60 to-transparent" />
                             </div>
 
                             <div className="absolute top-4 right-4 z-10">
                                 <button
                                     onClick={() => handleFavorite(selectedMovie)}
-                                    className="bg-secondary text-white p-3 rounded hover:bg-pink-700 transition-colors"
+                                    className=" text-white p-3 rounded transition-colors"
                                 >
                                     {isFavorite ? <FaBookmark size={20} /> : <FaRegBookmark size={20} />}
                                 </button>
@@ -226,16 +229,20 @@ export default function BuscaPage() {
                 {/* Paginação */}
                 {!selectedMovie && !loading && movies.length > 0 && (
                     <div className="flex justify-center items-center gap-2 mt-4 pb-4">
+                        <div className="text-white">
+                            Página {currentPage} de {totalPages}
+                        </div>
+
                         {currentPage > 1 && (
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}
-                                className="bg-secondary text-white w-8 h-8 flex items-center justify-center hover:bg-pink-700 transition-colors"
+                                className="bg-secondary text-white w-8 h-8 flex rounded-xl items-center justify-center hover:bg-pink-700 transition-colors rounded-xl"
                             >
                                 {currentPage - 1}
                             </button>
                         )}
 
-                        <button className="bg-secondary text-white w-8 h-8 flex items-center justify-center">
+                        <button className="bg-secondary text-white w-8 h-8 flex items-center justify-center rounded-xl">
                             {currentPage}
                         </button>
 
@@ -243,7 +250,7 @@ export default function BuscaPage() {
                             <>
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
-                                    className="bg-zinc-800 text-white w-8 h-8 flex items-center justify-center hover:bg-zinc-700 transition-colors"
+                                    className="bg-zinc-800 text-white w-8 h-8 flex items-center justify-center hover:bg-zinc-700 transition-colors rounded-xl"
                                 >
                                     {currentPage + 1}
                                 </button>
@@ -255,7 +262,7 @@ export default function BuscaPage() {
                                         )}
                                         <button
                                             onClick={() => handlePageChange(totalPages)}
-                                            className="bg-zinc-800 text-white w-8 h-8 flex items-center justify-center hover:bg-zinc-700 transition-colors"
+                                            className="bg-zinc-800 text-white w-8 h-8 flex items-center justify-center hover:bg-zinc-700 transition-colors rounded-xl"
                                         >
                                             {totalPages}
                                         </button>

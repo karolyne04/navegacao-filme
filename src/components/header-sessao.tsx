@@ -8,22 +8,32 @@ import { FiUser } from "react-icons/fi";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useClickOutside } from "../hooks/useClickOutside";
+import { toast } from "react-toastify";
 
 export default function HeaderSessao() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isSearching, setIsSearching] = useState(false);
+
     const router = useRouter();
 
     useClickOutside(dropdownRef, () => {
         if (isDropdownOpen) setIsDropdownOpen(false);
     });
 
-    const pesquisar = () => {
-        return (query: string) => {
-            console.log("Pesquisando:", query);
-        };
-    };
+    const handleSearch = async (query: string) => {
+        if (!query.trim()) return;
 
+        try {
+            setIsSearching(true);
+            router.push(`/busca?q=${encodeURIComponent(query)}`);
+        } catch (error) {
+            toast.error("Erro ao realizar a busca");
+            console.error("Erro na busca:", error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
     const handleLogout = () => {
         // Adicione aqui sua lógica de logout
         router.push('/');
@@ -37,7 +47,7 @@ export default function HeaderSessao() {
                 <Image src={logo} alt="logo" width={109} height={35} />
             </div>
             <div className="flex flex-1 justify-end items-center gap-4 pr-4">
-                <Search onSearch={pesquisar()} className="w-80" />
+                <Search onSearch={handleSearch} className="w-80" disabled={isSearching} placeholder="Buscar filmes..."/>
 
                 <div className="relative" ref={dropdownRef}>
                     <button

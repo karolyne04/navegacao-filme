@@ -44,7 +44,7 @@ export default function FormLogin() {
                     <Input label="Senha" placeholder="Digite sua senha" type="password"  value={password} 
                 onChange={(e) => setPassword(e.target.value)} />
                     
-                    <Button type="submit" className="bg-secondary rounded-md" onClick={handleLogin}>Entrar</Button>
+                    <Button type="submit" className="bg-secondary rounded-md w-full"onClick={handleLogin}>Entrar </Button>
                 </form>
             </div>
         </div>

@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createSession } from "../services/tmdbService";
+import { createSession } from "../../services/tmdbService";
 import { toast } from "react-toastify";
 
 export default function Authorized() {
@@ -16,14 +18,14 @@ export default function Authorized() {
                     const sessionId = await createSession(token);
                     localStorage.setItem("sessionId", sessionId);
                     document.cookie = `tmdbSessionId=${sessionId}; path=/;`;
-                    router.push("/inicio");
+                    router.push("/inicial");
                     toast.success("Login realizado com sucesso!");
                 } catch (error) {
                     toast.error("Erro ao criar sessão.");
                 }
             } else {
                 toast.error("Token de autenticação inválido.");
-                router.push("/login");
+                router.push("/");
             }
         };
 
