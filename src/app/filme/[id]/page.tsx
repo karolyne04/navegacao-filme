@@ -8,33 +8,48 @@ import { fetchMovieData } from "@/services/tmdbService";
 import PopularMoviesCarousel from "@/components/popular-movies-carousel";
 import { FaBookmark } from "react-icons/fa";
 
-interface MovieDetails {
+interface Genre {
+    id: number;
+    name: string;
+}
+
+interface ProductionCompany {
+    id: number;
+    name: string;
+}
+
+interface ProductionCountry {
+    iso_3166_1: string;
+    name: string;
+}
+interface Movie {
     id: number;
     title: string;
-    original_title: string;
+    orginal_title: string;
     backdrop_path: string;
     poster_path: string;
     overview: string;
     release_date: string;
     runtime: number;
     vote_average: number;
-    genres: Array<{ id: number; name: string }>;
-    production_companies: Array<{ id: number; name: string }>;
+    genres: Genre[];
+    original_language: string;
+    production_companies: ProductionCompany[];
     budget: number;
-    revenue: number;
+    production_contries: ProductionCountry[];
+}
+interface MovieDetailsProps {
+   movie: Movie;
 }
 
 export default function FilmePage() {
     const params = useParams();
-    const id = params?.id as string;
-
-    const [movie, setMovie] = useState<MovieDetails | null>(null);
+    const id = params.id;
+    const [movie, setMovie] = useState<Movie | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getMovieDetails = async () => {
-            if (!id) return;
-
             try {
                 const data = await fetchMovieData(id);
                 setMovie(data);
@@ -48,9 +63,8 @@ export default function FilmePage() {
         getMovieDetails();
     }, [id]);
 
-    if (loading || !movie) {
-        return <div className="text-white">Carregando...</div>;
-    }
+    if (loading) return <div>Carregando...</div>;
+    if (!movie) return <div>Filme não encontrado.</div>;
 
     return (
         <div className="min-h-screen bg-primary">
@@ -84,7 +98,7 @@ export default function FilmePage() {
                                 {movie.title}
                             </h1>
                             <p className="text-gray-300 text-xl mb-4">
-                                {movie.original_title}
+                                {movie.orginal_title}
                             </p>
 
                             <div className="flex items-center gap-4 text-white mb-6">
@@ -122,15 +136,15 @@ export default function FilmePage() {
                             <div className="grid grid-cols-4 gap-8 mb-8">
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-400 mb-1">Produção</h3>
-                                    <p className="text-white">{movie.production_companies[0]?.name}</p>
+                                    <p className="text-white">{movie.production_companies[0]?.name || "Desconhecido"}</p>
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-400 mb-1">País de origem</h3>
-                                    <p className="text-white">Estados Unidos Da América</p>
+                                    <p className="text-white">{movie.production_contries.length > 0 ? movie.production_contries.map((country) => country.name).join(", ") : "Desconhecido"}</p>
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-400 mb-1">Idioma Original</h3>
-                                    <p className="text-white">Inglês</p>
+                                    <p className="text-white">{movie.original_language.toUpperCase()}</p>
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-400 mb-1">Orçamento</h3>

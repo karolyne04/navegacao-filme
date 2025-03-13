@@ -15,18 +15,35 @@ export default function FormLogin() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async (event) => {
         event.preventDefault();
+        setLoading(true);
     
         try {
-            const token = await getRequestToken();
-            window.location.href = `https://www.themoviedb.org/authenticate/${token}?redirect_to=${window.location.origin}/authorized`;
+          const response = await fetch("/api/tmdb/authenticate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+    
+          const data = await response.json();
+    
+          if (!response.ok || !data.success) {
+            throw new Error(data.message || "Erro ao autenticar");
+          }
+    
+          // Salvar session_id no localStorage
+          localStorage.setItem("session_id", data.session_id);
+          toast.success("Login bem-sucedido!");
+          router.push("/inicial");
         } catch (error) {
-            toast.error("Erro ao iniciar o processo de login.");
+          toast.error(error.message || "Erro ao fazer login.");
+        } finally {
+          setLoading(false);
         }
-    };
-
+      };
     
     return (
         <div className="bg-[#27272A] p-10 rounded-lg shadow-md w-full max-w-md">
@@ -44,7 +61,7 @@ export default function FormLogin() {
                     <Input label="Senha" placeholder="Digite sua senha" type="password"  value={password} 
                 onChange={(e) => setPassword(e.target.value)} />
                     
-                    <Button type="submit" className="bg-secondary rounded-md w-full"onClick={handleLogin}>Entrar </Button>
+                    <Button type="submit" className="bg-secondary rounded-md w-full" onClick={handleLogin}> {loading ? "Entrado..." : "Entrar"} </Button>
                 </form>
             </div>
         </div>

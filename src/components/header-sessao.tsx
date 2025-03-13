@@ -9,12 +9,16 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useClickOutside } from "../hooks/useClickOutside";
 import { toast } from "react-toastify";
+import { logout } from '@/services/tmdbService';
 
-export default function HeaderSessao() {
+interface HeaderSessaoProps {
+    username?: string;
+}
+
+const HeaderSessao: React.FC<HeaderSessaoProps> = ({ username }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [isSearching, setIsSearching] = useState(false);
-
     const router = useRouter();
 
     useClickOutside(dropdownRef, () => {
@@ -35,7 +39,7 @@ export default function HeaderSessao() {
         }
     };
     const handleLogout = () => {
-        // Adicione aqui sua lógica de logout
+        logout();
         router.push('/');
     };
 
@@ -47,7 +51,7 @@ export default function HeaderSessao() {
                 <Image src={logo} alt="logo" width={109} height={35} />
             </div>
             <div className="flex flex-1 justify-end items-center gap-4 pr-4">
-                <Search onSearch={handleSearch} className="w-80" disabled={isSearching} placeholder="Buscar filmes..."/>
+                <Search onSearch={handleSearch} className="w-80" disabled={isSearching} placeholder="Buscar filmes..." />
 
                 <div className="relative" ref={dropdownRef}>
                     <button
@@ -60,9 +64,12 @@ export default function HeaderSessao() {
 
                     {isDropdownOpen && (
                         <div className="absolute right-0 mt-2 w-48 bg-zinc-900 rounded-lg shadow-lg py-1 z-50">
+
                             <div className="px-4 py-2 text-white border-b border-zinc-700">
-                                Olá, syslae👋
+                                Olá, {username ? username : "Visitante"}👋
                             </div>
+
+
                             <a
                                 href="/perfil"
                                 className="block px-4 py-2 text-white hover:bg-zinc-700 transition-colors border-b border-zinc-700"
@@ -86,3 +93,5 @@ export default function HeaderSessao() {
         </div>
     )
 }
+
+export default HeaderSessao;

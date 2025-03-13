@@ -6,11 +6,15 @@ import { LuGlobe } from "react-icons/lu";
 import { FaRegFlag } from "react-icons/fa6";
 import PopularMoviesCarousel from "@/components/popular-movies-carousel";
 import { useEffect, useState } from "react";
-import { getUserDetails } from "@/services/tmdbService";
+import { getUserDetails, fetchFavoriteMovies } from "@/services/tmdbService";
 import Line from "@/components/line";
 
 export default function Perfil() {
-    const [user, setUser] = useState<{ username: string } | null>(null);
+    const [user, setUser] = useState<{
+        email: string;
+        username: string;
+    } | null>(null);
+    const [favoriteMovies, setFavoriteMovies] = useState([]);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -19,6 +23,10 @@ export default function Perfil() {
                 try {
                     const userData = await getUserDetails(sessionId);
                     setUser(userData);
+
+                    // Buscar filmes favoritos
+                    const favoriteData = await fetchFavoriteMovies(sessionId);
+                    setFavoriteMovies(favoriteData.results || []);
                 } catch (error) {
                     console.error("Erro ao obter dados do usuário:", error);
                 }
@@ -30,9 +38,9 @@ export default function Perfil() {
 
     return (
         <div className="min-h-screen bg-primary">
-            <HeaderSessao />
+            <HeaderSessao username={user ? user.username : ''} />
             <div className="border-b border-zinc-700" />
-            <Line/>
+            <Line />
 
             <div className="mx-auto px-8 py-12">
                 {/* Seção do Perfil */}
@@ -44,9 +52,13 @@ export default function Perfil() {
                                 <FiUser className="text-white" size={64} />
                             </div>
                             <div className="m-5 justify-center  ">
-                                <h2 className="text-white text-xl font-semibold mb-1">Syslae Solutions</h2>
-                                {user ? <h2 className="text-white text-xl font-semibold mb-1"> {user.username} </h2> : <p>carregando...</p>}
-                                <p className="text-gray-400 mb-6">@syslaesolutions</p>
+
+                                {user ? (
+                                    <>
+                                        <h2 className="text-white text-xl font-semibold mb-1"> {user.username} </h2>
+                                        <p className="text-gray-400 mb-6">{user.email}</p>
+                                    </>
+                                ) : <p>carregando...</p>}
                             </div>
                         </div>
 
@@ -78,7 +90,7 @@ export default function Perfil() {
                 <div>
                     <h2 className="text-2xl font-bold text-white mb-6">Favoritos</h2>
                     <div className="relative">
-                        <PopularMoviesCarousel />
+                        <PopularMoviesCarousel movies={favoriteMovies} />
                     </div>
                 </div>
             </div>

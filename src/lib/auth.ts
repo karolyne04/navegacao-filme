@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // ou importe os provedores que estiver usando, como Google, GitHub etc.
 
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -22,9 +23,14 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+   
     async session({ session, token }) {
-      session.user.id = token.sub;
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
       return session;
-    },
+    }
+
+    
   },
 };

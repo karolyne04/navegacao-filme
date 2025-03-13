@@ -8,6 +8,10 @@ import PopularMoviesCarousel from "@/components/popular-movies-carousel";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import Line from "@/components/line";
+import FilmePage from "../filme/[id]/page";
+import MovieDetails from "@/components/MovieDetails";
+import auth from "@/api/auth";
+import HeaderSessao from "@/components/header-sessao";
 
 interface Movie {
     id: number;
@@ -35,6 +39,7 @@ export default function BuscaPage() {
     const [totalPages, setTotalPages] = useState(0);
     const [isFavorite, setIsFavorite] = useState(false);
     const itemsPerPage = 12; // Definindo o número de itens por página
+    const [session, setSession] = useState(null);
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -45,6 +50,9 @@ export default function BuscaPage() {
                 const data = await response.json();
                 setMovies(data.results);
                 setTotalPages(Math.min(Math.ceil(data.total_results / itemsPerPage), 107));
+                const userSession = await auth(); // Obtendo sessão
+                setSession(userSession);
+
 
                 // Atualizando para calcular total de páginas
                 setSelectedMovie(null);
@@ -86,7 +94,9 @@ export default function BuscaPage() {
 
     return (
         <div className={`h-screen bg-primary flex flex-col ${selectedMovie ? 'overflow-hidden' : ''}`}>
-            <Nav />
+            
+            {session ?  <Nav/>:  <HeaderSessao />}
+            
             <Line />
             <div className={`flex-1 px-4 py-6 ${selectedMovie ? 'overflow-hidden' : 'overflow-y-auto'}`}>
                 <div className="flex justify-between items-center mb-6">
@@ -129,6 +139,8 @@ export default function BuscaPage() {
                     </div>
                 ) : (
                     <>
+
+                       
                         <div className="relative">
                             <div className="relative w-full h-[500px]">
 
